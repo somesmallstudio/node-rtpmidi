@@ -1,26 +1,15 @@
 'use strict';
 
-var mdns = null,
-  util = require('util'),
+var util = require('util'),
   EventEmitter = require('events').EventEmitter,
-  service_id = '_apple-midi._udp',
+  service_id = '_apple-midi',//._udp
   publishedSessions = [],
   advertisments = [],
   remoteSessions = {},
-  browser = null,
-  avahi_pub;
+  browser = null
+;
 
-try {
-  mdns = require('mdns');
-} catch (e) {
-  console.log('mDNS discovery is not available.');
-}
-
-try {
-  avahi_pub = require('avahi_pub');
-} catch(e) {}
-
-
+const dnssd = require('dnssd');
 
 function sessionDetails(session) {
   var addressV4 = null,
@@ -48,8 +37,8 @@ function sessionDetails(session) {
 var details = {};
 
 function MDnsService() {
-  if (mdns) {
-    browser = mdns.createBrowser(service_id);
+  
+    browser = new dnssd.Browser(dnssd.udp(service_id));
     browser.on('serviceUp', function (service) {
       remoteSessions[service.name] = service;
       details[service.name] = sessionDetails(service);
@@ -66,22 +55,20 @@ function MDnsService() {
     
     }.bind(this));
 
-  }
+  
 }
 
 util.inherits(MDnsService, EventEmitter);
 
 MDnsService.prototype.start = function () {
   remoteSessions = {};
-  if (mdns) {
+  if (browser) {
     browser.start();
-  } else {
-    console.log('mDNS discovery is not available.')
   }
 };
 
 MDnsService.prototype.stop = function() {
-  if (mdns && browser) {
+  if (browser) {
     browser.stop();
   }
 };
@@ -91,23 +78,11 @@ MDnsService.prototype.publish = function(session) {
     return;
   }
   publishedSessions.push(session);
-
-  if (avahi_pub && avahi_pub.isSupported()) {
-    var ad = avahi_pub.publish({
-      name: session.bonjourName,
-      type: service_id,
-      port: session.port
-    });
-    advertisments.push(ad);
-
-  } else if (mdns) {
-    var ad = mdns.createAdvertisement(service_id, session.port, {
-      name: session.bonjourName
-    });
-    advertisments.push(ad);
-    ad.start();
-  }
-
+  const ad = new dnssd.Advertisement(dnssd.udp(service_id), session.port,{
+        name: session.bonjourName
+      });
+  advertisments.push(ad);
+  ad.start();
 };
 
 MDnsService.prototype.unpublish = function(session) {
@@ -116,13 +91,9 @@ MDnsService.prototype.unpublish = function(session) {
     return;
   }
   var ad = advertisments[index];
-
-  if (avahi_pub && avahi_pub.isSupported()) {
-    ad.remove();
-  } else if (mdns) {
-    ad.stop();
-  }
-
+  
+  ad.stop();
+  
   publishedSessions.splice(index);
   advertisments.splice(index);
 };
