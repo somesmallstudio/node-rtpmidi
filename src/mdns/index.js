@@ -1,9 +1,5 @@
-'use strict';
-
-var service;
-
-
-service = require('./service-mdns');
+/* eslint-disable global-require */
+let service = require('./service-mdns');
 
 
 module.exports = service;

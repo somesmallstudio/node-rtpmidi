@@ -1,6 +1,6 @@
 {
   "name": "rtpmidi",
-  "version": "0.1.9",
+  "version": "1.0.0",
   "author": "Jascha Dachtera <jascha.dachtera@gmail.com>",
   "description": "A node js implementation of Apples Network Midi Protocol. Updated by Andrew Mee <primary.edw@gmail.com> to work with later NodeJs Versions.",
   "main": "./index.js",
@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "dnssd": "^0.4.1",
-    "midi-common": "*"
+    "midi": "^1.0.0",
+    "midi-common": "*",
+    "winston": "^3.2.1"
   },
-  "optionalDependencies": {	
-   "midi": "^0.9.5"
-  },
+  "optionalDependencies": {},
   "keywords": [
     "midi",
     "rtpmidi",
@@ -25,5 +25,13 @@
   "license": "MIT",
   "engines": {
     "node": ">=0.4.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.17.3"
+  },
+  "scripts": {
+    "lint": "eslint src/"
   }
 }

@@ -1,19 +1,23 @@
 'use strict';
 
-var util = require('util'),
-  EventEmitter = require('events').EventEmitter,
-  service_id = '_apple-midi',//._udp
-  publishedSessions = [],
-  advertisments = [],
-  remoteSessions = {},
-  browser = null
-;
+const logger = require('../logger');
+
+var  mdns = null,
+util = require('util'),
+EventEmitter = require('events').EventEmitter,
+service_id = '_apple-midi',//._udp
+publishedSessions = [],
+advertisments = [],
+remoteSessions = {},
+browser = null,
+avahi_pub;
+
 
 const dnssd = require('dnssd');
 
 function sessionDetails(session) {
   var addressV4 = null,
-    addressV6 = null;
+  addressV6 = null;
 
   if (session.addresses) {
     session.addresses.forEach(function(address) {
@@ -37,7 +41,7 @@ function sessionDetails(session) {
 var details = {};
 
 function MDnsService() {
-  
+
     browser = new dnssd.Browser(dnssd.udp(service_id));
     browser.on('serviceUp', function (service) {
       remoteSessions[service.name] = service;
@@ -52,10 +56,10 @@ function MDnsService() {
       updateRemoteSessions();
       this.emit('remoteSessionDown', d);
 
-    
+
     }.bind(this));
 
-  
+
 }
 
 util.inherits(MDnsService, EventEmitter);
@@ -64,6 +68,8 @@ MDnsService.prototype.start = function () {
   remoteSessions = {};
   if (browser) {
     browser.start();
+  } else {
+    logger.log('mDNS discovery is not available.')
   }
 };
 
@@ -91,9 +97,16 @@ MDnsService.prototype.unpublish = function(session) {
     return;
   }
   var ad = advertisments[index];
-  
+
   ad.stop();
-  
+
+
+  // if (avahi_pub && avahi_pub.isSupported()) {
+  //   ad.remove();
+  // } else if (mdns) {
+  //   ad.stop();
+  // }
+
   publishedSessions.splice(index);
   advertisments.splice(index);
 };
