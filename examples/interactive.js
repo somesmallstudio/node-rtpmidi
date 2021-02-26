@@ -144,7 +144,7 @@ function listRemoteSessions() {
   }
 
   w('Remote sessions: \n');
-  w(rtpmidi.manager.getRemoteSessions().map((session, index) => `${index}: ${session.name} (Hostname: ${session.host} Address: ${session.address} Port: ${session.port})`).join('\n'));
+  w(allSession.map((session, index) => `${index}: ${session.name} (Hostname: ${session.host} Address: ${session.address} Port: ${session.port})`).join('\n'));
 
   // if (!session) {
   //   main();

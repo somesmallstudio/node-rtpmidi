@@ -97,12 +97,14 @@ Session.prototype.end = function end(callback) {
   }
 };
 
-Session.prototype.now = function now() {
+function now() {
   const hrtime = process.hrtime(this.startTimeHr);
   return Math.round(
     ((hrtime[0] + hrtime[1] / 1000 / 1000 / 1000)) * this.rate,
   ) % 0xffffffff;
-};
+}
+
+Session.prototype.now = now;
 
 Session.prototype.listening = function listening() {
   this.readyState += 1;
@@ -132,6 +134,9 @@ Session.prototype.handleMessage = function handleMessage(message, rinfo) {
     }
   } else {
     const rtpMidiMessage = new MidiMessage().parseBuffer(message);
+    if(!rtpMidiMessage){
+      return;
+    }
     stream = this.streams.filter(
       streamItem => streamItem.ssrc === rtpMidiMessage.ssrc,
     ).pop();
@@ -181,7 +186,7 @@ Session.prototype.queueFlush = function queueFlush() {
 Session.prototype.flushQueue = function flushQueue() {
   const streams = this.getStreams();
   const queue = this.queue.slice(0);
-  const now = this.now();
+  const now = now();
 
   this.queue.length = 0;
   this.flushQueued = false;
@@ -214,7 +219,7 @@ Session.prototype.sendMessage = function sendMessage(comexTime, command, ...args
   let cmd;
 
   if (arguments.length === 1) {
-    cTime = this.now();
+    cTime = now();
     command = comexTime; // Picks first arg using array destructing
   } else {
     cTime = comexTime - this.startTime;
