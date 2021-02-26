@@ -97,14 +97,12 @@ Session.prototype.end = function end(callback) {
   }
 };
 
-function now() {
+Session.prototype.now = function now() {
   const hrtime = process.hrtime(this.startTimeHr);
   return Math.round(
     ((hrtime[0] + hrtime[1] / 1000 / 1000 / 1000)) * this.rate,
   ) % 0xffffffff;
-}
-
-Session.prototype.now = now;
+};
 
 Session.prototype.listening = function listening() {
   this.readyState += 1;
@@ -186,7 +184,7 @@ Session.prototype.queueFlush = function queueFlush() {
 Session.prototype.flushQueue = function flushQueue() {
   const streams = this.getStreams();
   const queue = this.queue.slice(0);
-  const now = now();
+  const now = this.now();
 
   this.queue.length = 0;
   this.flushQueued = false;
@@ -219,7 +217,7 @@ Session.prototype.sendMessage = function sendMessage(comexTime, command, ...args
   let cmd;
 
   if (arguments.length === 1) {
-    cTime = now();
+    cTime = this.now();
     command = comexTime; // Picks first arg using array destructing
   } else {
     cTime = comexTime - this.startTime;
