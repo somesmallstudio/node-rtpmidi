@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "dnssd": "^0.4.1",
-    "midi": "^1.0.0",
+    "midi": "^2.0.0",
     "midi-common": "*",
     "winston": "^3.2.1"
   },
