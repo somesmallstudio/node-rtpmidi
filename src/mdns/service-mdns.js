@@ -84,6 +84,7 @@ MDnsService.prototype.publish = function(session) {
   }
   publishedSessions.push(session);
   const ad = bonjourService.publish({ name: session.bonjourName, type: 'apple-midi', port: session.port, protocol: 'udp' })
+  logger.debug('Added mDNS service', ad)
   advertisments.push(ad);
   ad.start();
 };
@@ -122,6 +123,7 @@ MDnsService.prototype.getRemoteSessions = function() {
 
 process.on('SIGINT', () => {
   bonjourService.unpublishAll(() => {
+    bonjourService.destroy()
     process.exit()
   })
 });
