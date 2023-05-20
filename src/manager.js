@@ -52,10 +52,10 @@ function createSession(config = {}, dontSave) {
 
 function removeSession(session) {
   if (session) {
-    session.end(() => {
-      sessions.splice(sessions.indexOf(session));
-      manager.emit('sessionRemoved', { session });
-    });
+    // session.end(() => {
+    //   sessions.splice(sessions.indexOf(session));
+    //   manager.emit('sessionRemoved', { session });
+    // });
   }
 }
 
@@ -154,7 +154,9 @@ function reset(callback) {
 
 process.on('SIGINT', () => {
   reset(() => {
-    process.exit();
+    // do not exit the process yet, the service mdns will do this.
+    // otherwise bye messages will not be send
+    // process.exit();
   });
 });
 

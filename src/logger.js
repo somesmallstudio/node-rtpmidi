@@ -1,20 +1,20 @@
-const { createLogger, format, transports } = require('winston');
+const dummerLogger = {
+  level: 0,
+  log: () => {},
+  info: () => {},
+  warn: () => {},
+  error: () => {},
+  verbose: () => {},
+  debug: () => {},
+};
 
-const { 
-  combine, timestamp, prettyPrint, colorize, align, printf,
-} = format;
+let logger = { ...dummerLogger };
 
-const logger = createLogger({
-  transports: [
-    new transports.Console(),
-  ],
-  format: combine(
-    colorize(),
-    prettyPrint(),
-    timestamp(),
-    align(),
-    printf(info => `${info.timestamp} ${info.level}: ${info.message}`),
-  ),
-});
+// eslint-disable-next-line no-unused-vars
+const createLogger = (l) => {
+  // eslint-disable-next-line no-param-reassign
+  l.createLoggerRTPMIDILogger = createLogger;
+  logger = l;
+};
 
 module.exports = logger;

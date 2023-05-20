@@ -31,11 +31,18 @@ function Session(port, localName, bonjourName, ssrc, published, ipVersion) {
   this.streamDisconnected = this.streamDisconnected.bind(this);
   this.deliverMessage = this.deliverMessage.bind(this);
   // Socket handling
-  this.controlChannel = dgram.createSocket(`udp${this.ipVersion}`);
+  this.controlChannel = dgram.createSocket({
+    type: `udp${this.ipVersion}`,
+    reuseAddr: true,
+  });
   this.controlChannel.on('message', this.handleMessage.bind(this));
   this.controlChannel.on('listening', this.listening.bind(this));
   this.controlChannel.on('error', this.emit.bind(this, 'error'));
-  this.messageChannel = dgram.createSocket(`udp${this.ipVersion}`);
+  
+  this.messageChannel = dgram.createSocket({
+    type: `udp${this.ipVersion}`,
+    reuseAddr: true,
+  });
   this.messageChannel.on('message', this.handleMessage.bind(this));
   this.messageChannel.on('listening', this.listening.bind(this));
   this.messageChannel.on('error', this.emit.bind(this, 'error'));
@@ -50,16 +57,12 @@ util.inherits(Session, EventEmitter);
 
 Session.prototype.start = function start() {
   if (this.published) {
-    if (this.published) {
-      this.on('ready', () => {
-        this.publish();
-      });
-    }
+    this.on('ready', () => this.publish());
   }
   // Bind channels to session port
   if(!this.controlChannel._bindState){
-    this.controlChannel.bind(this.port);
-    this.messageChannel.bind(this.port + 1);
+    this.controlChannel.bind(this.port, this.ipVersion == 4 ? '0.0.0.0' : '::');
+    this.messageChannel.bind(this.port + 1, this.ipVersion == 4 ? '0.0.0.0' : '::');
   }
 
 
