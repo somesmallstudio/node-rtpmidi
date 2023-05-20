@@ -1,20 +1,20 @@
 {
-  "name": "rtpmidi",
-  "version": "1.0.0",
+  "name": "@somesmallstudio/rtpmidi",
+  "version": "1.1.0",
   "author": "Jascha Dachtera <jascha.dachtera@gmail.com>",
-  "description": "A node js implementation of Apples Network Midi Protocol. Updated by Andrew Mee <primary.edw@gmail.com> to work with later NodeJs Versions.",
+  "description": "A node js implementation of Apples Network Midi Protocol. Updated by Andrew Mee <primary.edw@gmail.com> to work with later NodeJs Versions. Further updated by jens alexander <jens@somesmall.studio> with immproved mDNS support.",
   "main": "./index.js",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jdachtera/node-rtpmidi.git"
+    "url": "http://github.com/somesmallstudio/node-rtpmidi.git"
   },
   "dependencies": {
-    "dnssd": "^0.4.1",
-    "midi": "^2.0.0",
-    "midi-common": "*",
-    "winston": "^3.2.1"
+    "bonjour-service": "^1.1.1",
+    "midi-common": "*"
   },
-  "optionalDependencies": {},
+  "optionalDependencies": {
+    "midi": "^2.0.0"
+  },
   "keywords": [
     "midi",
     "rtpmidi",
