@@ -274,13 +274,13 @@ Stream.prototype.logSynchronization = function logSynchronization(incomingSyncMe
   const count = incomingSyncMessage ? incomingSyncMessage.count : -1;
 
   if (count === 0 || count === -1) {
-    logger.verbose(
+    logger.debug(
       '\n', 'T', 'C', 'Timestamp 1         ', 'Timestamp 2         ',
       'Timestamp 3         ', 'Latency   ', ' Time difference     ', 'Rate ',
     );
   }
   if (incomingSyncMessage) {
-    logger.verbose(
+    logger.debug(
       'I', incomingSyncMessage.count,
       pad(readUInt64BE(incomingSyncMessage.timestamp1), 20),
       pad(readUInt64BE(incomingSyncMessage.timestamp2), 20),
@@ -291,7 +291,7 @@ Stream.prototype.logSynchronization = function logSynchronization(incomingSyncMe
     );
   }
   if (answer.count < 3) {
-    logger.verbose(
+    logger.debug(
       'O', answer.count,
       pad(readUInt64BE(answer.timestamp1), 20),
       pad(readUInt64BE(answer.timestamp2), 20),

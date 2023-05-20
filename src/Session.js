@@ -115,7 +115,7 @@ Session.prototype.listening = function listening() {
 };
 
 Session.prototype.handleMessage = function handleMessage(message, rinfo) {
-  logger.verbose('Incoming Message = ', message);
+  logger.debug('Incoming Message = ', message);
   const appleMidiMessage = new ControlMessage().parseBuffer(message);
   let stream;
   if (appleMidiMessage.isValid) {
@@ -161,7 +161,7 @@ Session.prototype.sendUdpMessage = function sendMessage(rinfo, message, callback
         message.buffer.length,
         rinfo.port, rinfo.address,
         () => {
-          logger.verbose('Outgoing Message = ', message.buffer, rinfo.port, rinfo.address);
+          logger.debug('Outgoing Message = ', message.buffer, rinfo.port, rinfo.address);
           callback && callback();
         },
       );

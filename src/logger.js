@@ -1,20 +1,24 @@
-const dummerLogger = {
-  level: 0,
+let dummyLogger = {
   log: () => {},
   info: () => {},
   warn: () => {},
   error: () => {},
   verbose: () => {},
   debug: () => {},
-};
+}
 
-let logger = { ...dummerLogger };
+let _logger = dummyLogger
 
-// eslint-disable-next-line no-unused-vars
-const createLogger = (l) => {
-  // eslint-disable-next-line no-param-reassign
-  l.createLoggerRTPMIDILogger = createLogger;
-  logger = l;
+const logger = {
+  level: 0,
+  log: (...args) => _logger.log(...args),
+  info: (...args) => _logger.info(...args),
+  warn: (...args) => _logger.warn(...args),
+  error: (...args) => _logger.error(...args),
+  verbose: (...args) => _logger.debug(...args),
+  debug: (...args) => _logger.debug(...args),
+  setLogger: logger => _logger = logger,
+  dummyLogger,
 };
 
 module.exports = logger;

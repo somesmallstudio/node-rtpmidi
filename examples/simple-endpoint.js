@@ -1,5 +1,6 @@
 const rtpmidi = require('../index')
 
+// rtpmidi.logger.setLogger(console)
 rtpmidi.logger.level = 'debug'
 
 const session = rtpmidi.manager.createSession({
