@@ -38,7 +38,7 @@ class ControlMessage extends AbstractMessage {
     }
 
     parseBuffer(buffer, ...args) {
-      AbstractMessage.prototype.parseBuffer.apply(this, args);
+      super.parseBuffer(...args);
       this.start = buffer.readUInt16BE(0);
       if (this.start !== flags.start) {
         this.isValid = false;

@@ -31,7 +31,7 @@ class RTPMessage extends AbstractMessage {
     parseBuffer(buffer, ...args) {
       let currentOffset;
 
-      AbstractMessage.prototype.parseBuffer.apply(this, args);
+      super.parseBuffer(...args);
       const firstByte = buffer.readUInt8(0);
 
       this.version = firstByte >>> 6;

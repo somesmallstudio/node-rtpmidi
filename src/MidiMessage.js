@@ -34,7 +34,7 @@ class MidiMessage extends RTPMessage {
     }
 
     parseBuffer(...args) {
-      RTPMessage.prototype.parseBuffer.apply(this, args);
+      super.parseBuffer(...args);
 
       const { payload } = this;
       const firstByte = payload.readUInt8(0);
@@ -323,7 +323,7 @@ class MidiMessage extends RTPMessage {
 
       this.payload = payload;
 
-      RTPMessage.prototype.generateBuffer.apply(this);
+      super.generateBuffer();
       return this;
     }
 
