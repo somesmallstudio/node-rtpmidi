@@ -3,7 +3,6 @@
 const logger = require('../logger');
 
 var  mdns = null,
-util = require('util'),
 EventEmitter = require('events').EventEmitter,
 service_id = '_apple-midi',
 publishedSessions = [],
@@ -44,68 +43,6 @@ function sessionDetails(session) {
 }
 var details = {};
 
-function MDnsService() {
-    browser = bonjourService.find({ type: 'apple-midi', protocol: 'udp' });
-    browser.on('up', function (service) {
-      remoteSessions[service.name] = service;
-      details[service.name] = sessionDetails(service);
-      updateRemoteSessions();
-      this.emit('remoteSessionUp', details[service.name]);
-    }.bind(this));
-    browser.on('down', function (service) {
-      var d = details[service.name];
-      delete(remoteSessions[service.name]);
-      delete(details[service.name]);
-      updateRemoteSessions();
-      this.emit('remoteSessionDown', d);
-    }.bind(this));
-}
-
-util.inherits(MDnsService, EventEmitter);
-
-MDnsService.prototype.start = function () {
-  remoteSessions = {};
-  if (browser) {
-    browser.start();
-  } else {
-    logger.log('mDNS discovery is not available.')
-  }
-};
-
-MDnsService.prototype.stop = function() {
-  if (browser) {
-    browser.stop();
-  }
-};
-
-MDnsService.prototype.publish = function(session) {
-  if (publishedSessions.indexOf(session) !== -1) {
-    return;
-  }
-  publishedSessions.push(session);
-  const ad = bonjourService.publish({ name: session.bonjourName, type: 'apple-midi', port: session.port, protocol: 'udp' })
-  logger.debug('Added mDNS service', ad)
-  advertisments.push(ad);
-  ad.start();
-};
-
-MDnsService.prototype.unpublishAll = function (cb = () => {}) {
-  bonjourService.unpublishAll(cb)
-}
-
-MDnsService.prototype.unpublish = function(session) {
-  var index = publishedSessions.indexOf(session);
-  if (index === -1) {
-    return;
-  }
-  var ad = advertisments[index];
-
-  ad.stop(() => {
-    publishedSessions.splice(index);
-    advertisments.splice(index);    
-  });
-};
-
 var sessions = [];
 
 function updateRemoteSessions() {
@@ -117,9 +54,72 @@ function updateRemoteSessions() {
   }
 };
 
-MDnsService.prototype.getRemoteSessions = function() {
-  return sessions;
-};
+class MDnsService extends EventEmitter {
+    constructor() {
+        super()
+        browser = bonjourService.find({ type: 'apple-midi', protocol: 'udp' });
+        browser.on('up', function (service) {
+          remoteSessions[service.name] = service;
+          details[service.name] = sessionDetails(service);
+          updateRemoteSessions();
+          this.emit('remoteSessionUp', details[service.name]);
+        }.bind(this));
+        browser.on('down', function (service) {
+          var d = details[service.name];
+          delete(remoteSessions[service.name]);
+          delete(details[service.name]);
+          updateRemoteSessions();
+          this.emit('remoteSessionDown', d);
+        }.bind(this));
+    }
+
+    start() {
+      remoteSessions = {};
+      if (browser) {
+        browser.start();
+      } else {
+        logger.log('mDNS discovery is not available.')
+      }
+    }
+
+    stop() {
+      if (browser) {
+        browser.stop();
+      }
+    }
+
+    publish(session) {
+      if (publishedSessions.indexOf(session) !== -1) {
+        return;
+      }
+      publishedSessions.push(session);
+      const ad = bonjourService.publish({ name: session.bonjourName, type: 'apple-midi', port: session.port, protocol: 'udp' })
+      logger.debug('Added mDNS service', ad)
+      advertisments.push(ad);
+      ad.start();
+    }
+
+    unpublishAll(cb = () => {}) {
+      bonjourService.unpublishAll(cb)
+    }
+
+    unpublish(session) {
+      var index = publishedSessions.indexOf(session);
+      if (index === -1) {
+        return;
+      }
+      var ad = advertisments[index];
+
+      ad.stop(() => {
+        publishedSessions.splice(index);
+        advertisments.splice(index);
+      });
+    }
+
+    getRemoteSessions() {
+      return sessions;
+    }
+}
 
 process.on('SIGINT', () => {
   bonjourService.unpublishAll(() => {
