@@ -116,7 +116,7 @@ function changeSession(config) {
         session.publish();
       }
       this.emit('sessionChanged', { session });
-    };
+    }
 
     if (config.published === false
       || republish || config.activated === false) {
